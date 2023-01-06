@@ -4,8 +4,13 @@ import {ref, onMounted, computed, watch } from 'vue'
 
 const firstPage = ref(true);
 const subjects = ref([])
+const individual_reports = ref([])
+const name = ref()
+const score = ref()
 
 const input_subject = ref('')
+
+const i = ref(1);
 
 const addSubject = () => {
     if(input_subject.value.trim() === '' || input_subject.value === null)
@@ -14,22 +19,45 @@ const addSubject = () => {
     }
 
     subjects.value.push({
+        id: i.value++,
         name: input_subject.value,
+        scores: [],
         createdAt: new Date().getTime()
     })
 
     input_subject.value = ''
-
-    console.log(subjects.value)
 }
 
+const addColumn = () => {
+    const person = subjects.value.filter((value, index) => {
+        individual_reports.value.push({
+            name: name.value,
+        })
+
+        console.log(subject_score)
+    })
+}
+
+
+watch(subjects, newVal => {
+    localStorage.setItem('subjects', JSON.stringify(newVal))
+}, { deep: true })
+
+onMounted( () => {
+    subjects.value = JSON.parse(localStorage.getItem('subjects')) || []
+})
+
+function testing()
+{
+    console.log(individual_reports.value)
+}
 </script>
 
 <template>
   <h1 class="text-gray-200 text-center text-3xl my-10 font-bold uppercase">Result Checker</h1>
 
 <div class="w-11/12 mx-auto">
-    <div v-if="firstPage">
+    <div v-if="firstPage" class="mb-5">
         <div>
             <form class="space-y-4 md:space-y-6" @submit.prevent="addSubject">
                 <div>
@@ -38,7 +66,7 @@ const addSubject = () => {
                 </div>
                 
                 <div class="flex justify-end">
-                    <button type="submit" class=" text-gray-200 bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-purple-900 dark:focus:ring-primary-800">Add</button>
+                    <button type="submit" class="text-gray-200 bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-purple-900 dark:focus:ring-primary-800">Add</button>
                 </div>
             </form>
         </div>
@@ -53,19 +81,33 @@ const addSubject = () => {
                         <th scope="col" class="py-3 px-6">
                             Name
                         </th>
+                        <th scope="col" class="py-3 px-6">
+                            Action
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                        <td class="py-4 px-6">
-                            1
+                    <tr v-for="subject in subjects" :key="subject.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                        <td  class="py-4 px-6">
+                            {{ subject.id }}
                         </td>
                         <td class="py-4 px-6">
-                            English
+                            <input type="text" v-model="subject.name" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
+                        </td>
+                        <td  class="py-4 px-6">
+                            <button class="text-red-200 bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-1 text-center dark:bg-primary-600 dark:hover:bg-red-800 dark:focus:ring-primary-800">
+                                Delete
+                            </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
+            <div class="flex justify-end mt-20">
+                <button @click="firstPage = !firstPage" class="text-gray-200 bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-purple-900 dark:focus:ring-primary-800">
+                    Proceed
+                </button>
+            </div>
         </div>
     </div>
 
@@ -77,7 +119,7 @@ const addSubject = () => {
                     <button class="bg-purple-800 rounded-md px-5 py-2 dark:text-gray-200 font-semibold hover:bg-purple-900">
                         Alphabetical Order
                     </button>
-                    <button class="bg-purple-800 rounded-md px-5 py-2 dark:text-gray-200 font-semibold hover:bg-purple-900">
+                    <button @click="testing" class="bg-purple-800 rounded-md px-5 py-2 dark:text-gray-200 font-semibold hover:bg-purple-900">
                         Position
                     </button>
                 </div>
@@ -94,32 +136,8 @@ const addSubject = () => {
                         <th scope="col" class="py-3 px-6">
                             Name
                         </th>
-                        <th scope="col" class="py-3 px-6">
-                            English
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Mathematics
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Biology
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Chemistry
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Physics
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Geography
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Civic Education
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Further Mathematics
-                        </th>
-                        <th scope="col" class="py-3 px-6">
-                            Catering
+                        <th v-for="subject in subjects" :key="subject.id" scope="col" class="py-3 px-6">
+                            {{ subject.name }}
                         </th>
                         <th scope="col" class="py-3 px-6">
                             Total
@@ -138,37 +156,13 @@ const addSubject = () => {
                 <tbody>
                     <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
                         <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            John Doe
+                            <input type="text" v-model="name" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
                         </th>
-                        <td class="py-4 px-6">
-                            78
+                        <td v-for="subject in subjects" :key="subject.id" class="py-4 px-6">
+                            
                         </td>
                         <td class="py-4 px-6">
-                            87
-                        </td>
-                        <td class="py-4 px-6">
-                            79
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            93
-                        </td>
-                        <td class="py-4 px-6">
-                            80
-                        </td>
-                        <td class="py-4 px-6">
-                            88
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            63
-                        </td>
-                        <td class="py-4 px-6">
-                        720
+                            720
                         </td>
                         <td class="py-4 px-6">
                             80.23
@@ -180,144 +174,21 @@ const addSubject = () => {
                             <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
                         </td>
                     </tr>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
-                        <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            John Doe
-                        </th>
-                        <td class="py-4 px-6">
-                            78
-                        </td>
-                        <td class="py-4 px-6">
-                            87
-                        </td>
-                        <td class="py-4 px-6">
-                            79
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            93
-                        </td>
-                        <td class="py-4 px-6">
-                            80
-                        </td>
-                        <td class="py-4 px-6">
-                            88
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            63
-                        </td>
-                        <td class="py-4 px-6">
-                        720
-                        </td>
-                        <td class="py-4 px-6">
-                            80.23
-                        </td>
-                        <td class="py-4 px-6">
-                            3rd
-                        </td>
-                        <td class="py-4 px-6">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
-                        <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            John Doe
-                        </th>
-                        <td class="py-4 px-6">
-                            78
-                        </td>
-                        <td class="py-4 px-6">
-                            87
-                        </td>
-                        <td class="py-4 px-6">
-                            79
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            93
-                        </td>
-                        <td class="py-4 px-6">
-                            80
-                        </td>
-                        <td class="py-4 px-6">
-                            88
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            63
-                        </td>
-                        <td class="py-4 px-6">
-                        720
-                        </td>
-                        <td class="py-4 px-6">
-                            60.23
-                        </td>
-                        <td class="py-4 px-6">
-                            4th
-                        </td>
-                        <td class="py-4 px-6">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
-                        <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            John Doe 3
-                        </th>
-                        <td class="py-4 px-6">
-                            78
-                        </td>
-                        <td class="py-4 px-6">
-                            87
-                        </td>
-                        <td class="py-4 px-6">
-                            79
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            93
-                        </td>
-                        <td class="py-4 px-6">
-                            80
-                        </td>
-                        <td class="py-4 px-6">
-                            88
-                        </td>
-                        <td class="py-4 px-6">
-                            84
-                        </td>
-                        <td class="py-4 px-6">
-                            63
-                        </td>
-                        <td class="py-4 px-6">
-                        720
-                        </td>
-                        <td class="py-4 px-6">
-                            78.3
-                        </td>
-                        <td class="py-4 px-6">
-                            2nd
-                        </td>
-                        <td class="py-4 px-6">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
-                        </td>
-                    </tr>
                 </tbody>
-            </table>
+            </table>               
         </div>
+
+        <div class="mt-10 flex justify-between">
+            <button @click="firstPage = !firstPage" class="text-gray-200 bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-purple-900 dark:focus:ring-primary-800">
+                Previous
+            </button>
+
+            <button @click="addColumn" class="text-gray-200 bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-purple-900 dark:focus:ring-primary-800">
+                Add New Column
+            </button>
+        </div> 
     </div>
 
 </div>
 
 </template>
-
