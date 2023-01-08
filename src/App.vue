@@ -6,9 +6,10 @@ const firstPage = ref(true);
 const subjects = ref([])
 const individual_reports = ref([])
 const name = ref()
-const score = ref()
-
+const score = ref([])
 const input_subject = ref('')
+const number_of_subjects = ref(0)
+const subjects_name = ref([])
 
 const i = ref(1);
 
@@ -19,38 +20,41 @@ const addSubject = () => {
     }
 
     subjects.value.push({
-        id: i.value++,
-        name: input_subject.value,
-        scores: [],
-        createdAt: new Date().getTime()
+        id: number_of_subjects.value + 1,
+        name: input_subject.value
     })
 
     input_subject.value = ''
 }
 
 const addColumn = () => {
-    const person = subjects.value.filter((value, index) => {
-        individual_reports.value.push({
-            name: name.value,
-        })
 
-        console.log(subject_score)
+    subjects_name.value = subjects.value.map(({name}) => name)
+
+    individual_reports.value.push({
+        name: name.value,
+        subjects: subjects_name.value,
+        scores: score.value
     })
+
+    console.log(individual_reports.value)
 }
 
 
 watch(subjects, newVal => {
     localStorage.setItem('subjects', JSON.stringify(newVal))
+     number_of_subjects.value = subjects.value.length
 }, { deep: true })
+
+watch(individual_reports, newVal => {
+    localStorage.setItem('individual_reports', JSON.stringify(newVal))
+}, {deep: true })
 
 onMounted( () => {
     subjects.value = JSON.parse(localStorage.getItem('subjects')) || []
 })
 
-function testing()
-{
-    console.log(individual_reports.value)
-}
+
 </script>
 
 <template>
@@ -158,8 +162,8 @@ function testing()
                         <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                             <input type="text" v-model="name" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
                         </th>
-                        <td v-for="subject in subjects" :key="subject.id" class="py-4 px-6">
-                            
+                        <td v-for="(n, index) in number_of_subjects" :key="n" class="py-4 px-6">
+                            <input type="text" v-model="score[index]" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200"> 
                         </td>
                         <td class="py-4 px-6">
                             720
@@ -175,7 +179,7 @@ function testing()
                         </td>
                     </tr>
                 </tbody>
-            </table>               
+            </table>            
         </div>
 
         <div class="mt-10 flex justify-between">
