@@ -43,7 +43,7 @@ const addColumn = () => {
 
 watch(subjects, newVal => {
     localStorage.setItem('subjects', JSON.stringify(newVal))
-     number_of_subjects.value = subjects.value.length
+     number_of_subjects.value = subjects.value.lengthgit
 }, { deep: true })
 
 watch(individual_reports, newVal => {
