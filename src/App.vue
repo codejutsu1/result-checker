@@ -5,11 +5,13 @@ import {ref, onMounted, computed, watch } from 'vue'
 const firstPage = ref(true);
 const subjects = ref([])
 const individual_reports = ref([])
-const name = ref()
+const name = ref([])
 const score = ref([])
 const input_subject = ref('')
 const number_of_subjects = ref(0)
 const subjects_name = ref([])
+const number_of_columns = ref()
+const individual_name = ref('')
 
 const i = ref(1);
 
@@ -28,30 +30,34 @@ const addSubject = () => {
 }
 
 const addColumn = () => {
-
     subjects_name.value = subjects.value.map(({name}) => name)
 
     individual_reports.value.push({
-        name: name.value,
-        subjects: subjects_name.value,
         scores: score.value
     })
-
-    console.log(individual_reports.value)
 }
 
 
 watch(subjects, newVal => {
     localStorage.setItem('subjects', JSON.stringify(newVal))
-     number_of_subjects.value = subjects.value.lengthgit
+     number_of_subjects.value = subjects.value.length
 }, { deep: true })
 
 watch(individual_reports, newVal => {
     localStorage.setItem('individual_reports', JSON.stringify(newVal))
+    number_of_columns.value = individual_reports.value.length
 }, {deep: true })
+
+watch(name, newVal => {
+    localStorage.setItem('name', JSON.stringify(newVal))
+}, {deep: true })
+
 
 onMounted( () => {
     subjects.value = JSON.parse(localStorage.getItem('subjects')) || []
+    individual_reports.value  = JSON.parse(localStorage.getItem('individual_reports')) || []
+    name.value = JSON.parse(localStorage.getItem('name')) || []
+
 })
 
 
@@ -107,6 +113,13 @@ onMounted( () => {
                 </tbody>
             </table>
 
+                <!-- <div>
+                    <p v-for="scores in individual_reports[0].scores" :key="scores">
+                        {{
+                             scores
+                        }}
+                    </p> -->
+                <!-- </div> -->
             <div class="flex justify-end mt-20">
                 <button @click="firstPage = !firstPage" class="text-gray-200 bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-purple-900 dark:focus:ring-primary-800">
                     Proceed
@@ -158,12 +171,14 @@ onMounted( () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
+                    <tr v-for="(n, index) in number_of_columns+1" :key="n" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
                         <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                            <input type="text" v-model="name" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
+                           {{ name[index] }}
+                            <input type="text" v-model="name[index]" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
                         </th>
-                        <td v-for="(n, index) in number_of_subjects" :key="n" class="py-4 px-6">
-                            <input type="text" v-model="score[index]" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200"> 
+                        <td v-for="(k, i) in number_of_subjects" :key="k" class="py-4 px-6">
+                            {{ index }} {{ i }}
+                            <input type="text" v-model="score[i]" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200"> 
                         </td>
                         <td class="py-4 px-6">
                             720
