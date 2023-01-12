@@ -10,7 +10,7 @@ const number_of_subjects = ref(0)
 const scores = ref([])
 const number_of_columns =  ref()
 const number_of_rows = ref()
-const scores_data = ref()
+const splice =  ref()
 
 const i = ref(1);
 
@@ -30,16 +30,14 @@ const addSubject = () => {
 
 const addColumn = () => {
     number_of_columns.value++
-    scores.value.push(scores.value)
-    console.log(scores.value)
+
+    scores.value.push([])
+
+    if(scores.value.length != number_of_columns.value+1){
+        splice.value = number_of_columns.value - (scores.value.length-1)
+        scores.value.splice(splice.value)
+    }
 }
-
-
-// scores.value = [
-//     [12, 34, 78],
-//     [67, 78, 89],
-//     [89, 98, 90]
-// ] || []
 
 watch(subjects, newVal => {
     localStorage.setItem('subjects', JSON.stringify(newVal))
@@ -51,14 +49,14 @@ watch(name, newVal => {
     number_of_columns.value = name.value.length
 }, {deep: true })
 
-watch(scores_data, newVal => {
+watch(scores, newVal => {
     localStorage.setItem('scores', JSON.stringify(newVal))
 }, { deep: true })
 
 onMounted( () => {
     subjects.value = JSON.parse(localStorage.getItem('subjects')) || []
     name.value = JSON.parse(localStorage.getItem('name')) || []
-    // scores.value = JSON.parse(localStorage.getItem('scores')) || [[]]
+    scores.value = JSON.parse(localStorage.getItem('scores')) || [[]]
 
 })
 
@@ -169,16 +167,10 @@ onMounted( () => {
                 <tbody>
                     <tr v-for="(n, index) in number_of_columns" :key="n" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300">
                         <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                           {{ name[index] }}
-                            <input type="text" v-model="name[index]" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
+                            <input type="text" v-model="name[index]" placeholder="Input Full Name" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
                         </th>
-            <!-- {{            <td v-for="(k, i) in number_of_subjects" :key="k" class="py-4 px-6">
-                            {{ index }} {{ i }}  {{ score[index][1] }}
-                            <input type="text" v-model="score[i]" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200"> 
-                        </td>}} -->
                         <td v-for="(i, k) in number_of_rows" :key="i">
-                            {{ scores }} {{ index }}
-                            <input type="text" v-model.number="scores[index][k]">
+                            <input type="text" v-model.number="scores[index][k]" placeholder="NULL" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
                         </td>
                         <td class="py-4 px-6">
                             720
