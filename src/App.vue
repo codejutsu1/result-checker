@@ -10,6 +10,9 @@ const scores = ref([])
 const number_of_columns =  ref()
 const number_of_rows = ref()
 const splice =  ref()
+const total = ref([])
+const average = ref([])
+
 
 const i = ref(1);
 
@@ -35,6 +38,13 @@ const addColumn = () => {
     if(scores.value.length != number_of_columns.value+1){
         splice.value = number_of_columns.value - (scores.value.length-1)
         scores.value.splice(splice.value)
+    }
+}
+
+const calculate = () => {
+    for (let index = 0; index < scores.value.length; index++) {
+        total.value[index] = scores.value[index].reduce((a, b) => a + b, 0)
+        average.value[index] = (total.value[index] / scores.value[index].length).toFixed(2)
     }
 }
 
@@ -126,11 +136,8 @@ onMounted( () => {
             <div>
                 <h2 class="text-gray-300 font-semibold text-xl mb-3">Order By</h2>
                 <div class="flex space-x-5">
-                    <button class="bg-purple-800 rounded-md px-5 py-2 dark:text-gray-200 font-semibold hover:bg-purple-900">
-                        Alphabetical Order
-                    </button>
-                    <button @click="testing" class="bg-purple-800 rounded-md px-5 py-2 dark:text-gray-200 font-semibold hover:bg-purple-900">
-                        Position
+                    <button @click="calculate" class="bg-purple-800 rounded-md px-5 py-2 dark:text-gray-200 font-semibold hover:bg-purple-900">
+                        Calculate
                     </button>
                 </div>
             </div>
@@ -172,10 +179,10 @@ onMounted( () => {
                             <input type="text" v-model.number="scores[index][k]" placeholder="NULL" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
                         </td>
                         <td class="py-4 px-6">
-                            720
+                            {{ total[index] }}
                         </td>
                         <td class="py-4 px-6">
-                            80.23
+                            {{ average[index] }}
                         </td>
                         <td class="py-4 px-6">
                             1st
