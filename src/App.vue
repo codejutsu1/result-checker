@@ -1,5 +1,4 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
 import {ref, onMounted, computed, watch } from 'vue'
 
 const firstPage = ref(true);
