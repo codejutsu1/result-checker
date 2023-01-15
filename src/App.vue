@@ -1,7 +1,7 @@
 <script setup>
 import {ref, onMounted, computed, watch } from 'vue'
 
-const firstPage = ref(true);
+const firstPage = ref(false);
 const subjects = ref([])
 const name = ref([])
 const input_subject = ref('')
@@ -12,6 +12,8 @@ const number_of_rows = ref()
 const splice =  ref()
 const total = ref([])
 const average = ref([])
+const ranking = ref([])
+const position = ref([])
 
 
 const i = ref(1);
@@ -30,6 +32,28 @@ const addSubject = () => {
     input_subject.value = ''
 }
 
+function rankings(arr){
+  // add whatever parameters you deem necessary....good luck! 
+  var sorted = arr.slice().sort(function(a,b){return b-a})
+  var ranks = arr.slice().map(function(v){ return sorted.indexOf(v) + 1});
+  return ranks;
+}
+
+function ordinal_suffix_of(i) {
+    var j = i % 10,
+        k = i % 100;
+    if (j == 1 && k != 11) {
+        return i + "st";
+    }
+    if (j == 2 && k != 12) {
+        return i + "nd";
+    }
+    if (j == 3 && k != 13) {
+        return i + "rd";
+    }
+    return i + "th";
+}
+
 const addColumn = () => {
     number_of_columns.value++
 
@@ -44,7 +68,11 @@ const addColumn = () => {
 const calculate = () => {
     for (let index = 0; index < scores.value.length; index++) {
         total.value[index] = scores.value[index].reduce((a, b) => a + b, 0)
-        average.value[index] = (total.value[index] / scores.value[index].length).toFixed(2)
+        average.value[index] = Number((total.value[index] / scores.value[index].length).toFixed(2))
+    }
+    ranking.value = rankings(average.value)
+    for (let index = 0; index < ranking.value.length; index++) {
+        position.value[index] = ordinal_suffix_of(ranking.value[index])
     }
 }
 
@@ -70,12 +98,17 @@ watch(average, newVal => {
     localStorage.setItem('average', JSON.stringify(newVal))
 }, { deep: true })
 
+watch(position, newVal => {
+    localStorage.setItem('position', JSON.stringify(newVal))
+}, { deep: true })
+
 onMounted( () => {
     subjects.value = JSON.parse(localStorage.getItem('subjects')) || []
     name.value = JSON.parse(localStorage.getItem('name')) || []
     scores.value = JSON.parse(localStorage.getItem('scores')) || [[]]
     total.value = JSON.parse(localStorage.getItem('total')) || []
     average.value = JSON.parse(localStorage.getItem('average')) || []
+    position.value = JSON.parse(localStorage.getItem('position')) || []
 })
 
 
@@ -174,9 +207,6 @@ onMounted( () => {
                         <th scope="col" class="py-3 px-6">
                             Position
                         </th>
-                        <th scope="col" class="py-3 px-6">
-                            Actions
-                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -194,10 +224,7 @@ onMounted( () => {
                             {{ average[index] }}
                         </td>
                         <td class="py-4 px-6">
-                            1st
-                        </td>
-                        <td class="py-4 px-6">
-                            <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</a>
+                            {{ position[index] }}
                         </td>
                     </tr>
                 </tbody>
