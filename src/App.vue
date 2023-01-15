@@ -62,11 +62,20 @@ watch(scores, newVal => {
     localStorage.setItem('scores', JSON.stringify(newVal))
 }, { deep: true })
 
+watch(total, newVal => {
+    localStorage.setItem('total', JSON.stringify(newVal))
+}, { deep: true })
+
+watch(average, newVal => {
+    localStorage.setItem('average', JSON.stringify(newVal))
+}, { deep: true })
+
 onMounted( () => {
     subjects.value = JSON.parse(localStorage.getItem('subjects')) || []
     name.value = JSON.parse(localStorage.getItem('name')) || []
     scores.value = JSON.parse(localStorage.getItem('scores')) || [[]]
-
+    total.value = JSON.parse(localStorage.getItem('total')) || []
+    average.value = JSON.parse(localStorage.getItem('average')) || []
 })
 
 
