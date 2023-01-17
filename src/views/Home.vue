@@ -20,6 +20,11 @@ const addSubject = () => {
     input_subject.value = ''
 }
 
+const deleteSubject = subject => {
+    subjects.value = subjects.value.filter(t => t !== subject)
+}
+
+
 watch(subjects, newVal => {
     localStorage.setItem('subjects', JSON.stringify(newVal))
     number_of_subjects.value = number_of_rows.value = subjects.value.length 
@@ -72,7 +77,7 @@ onMounted( () => {
                             <input type="text" v-model="subject.name" class="py-1 px-2 focus:outline-none bg-gray-600 text-gray-200">
                         </td>
                         <td  class="py-4 px-6">
-                            <button class="text-red-200 bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-1 text-center dark:bg-primary-600 dark:hover:bg-red-800 dark:focus:ring-primary-800">
+                            <button @click="deleteSubject(subject)" class="text-red-200 bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-3 py-1 text-center dark:bg-primary-600 dark:hover:bg-red-800 dark:focus:ring-primary-800">
                                 Delete
                             </button>
                         </td>

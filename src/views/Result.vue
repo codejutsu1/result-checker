@@ -56,6 +56,21 @@ const calculate = () => {
     }
 }
 
+const clearTable = () => {
+
+    localStorage.removeItem('name')
+    localStorage.removeItem('scores')
+    localStorage.removeItem('total')
+    localStorage.removeItem('average')
+    localStorage.removeItem('position')
+
+    location.reload();
+}
+
+const clearAll = () => {
+    localStorage.clear()
+}
+
 watch(subjects, newVal => {
     localStorage.setItem('subjects', JSON.stringify(newVal))
      number_of_rows.value = subjects.value.length
@@ -105,9 +120,9 @@ onMounted( () => {
                     </router-link>
                 </div>
             </div>
-            <!-- <button class="bg-purple-800 rounded-md px-5 py-3 dark:text-gray-200 font-semibold hover:bg-purple-900">
-                Export Excel
-            </button> -->
+            <button @click="clearTable" class="bg-purple-800 rounded-md px-5 py-3 dark:text-gray-200 font-semibold hover:bg-purple-900">
+                Clear Table
+            </button>
         </div>
 
         <div class="overflow-x-auto w-full mx-auto relative shadow-md sm:rounded-lg">
@@ -137,7 +152,7 @@ onMounted( () => {
                             <input type="text" v-model="name[index]" placeholder="Input Full Name" class="p-2 focus:outline-none bg-gray-600 text-gray-200 font-bold  tracking-wider">
                         </th>
                         <td v-for="(i, k) in number_of_rows" :key="i">
-                            <input type="text" v-model.number="scores[index][k]" placeholder="NULL" class="p-2 focus:outline-none bg-gray-600 text-gray-200 font-semibold">
+                            <input type="text" v-model.number="scores[index][k]" placeholder="NULL" class="p-1 md:p-2 focus:outline-none bg-gray-600 text-gray-200 font-semibold">
                         </td>
                         <td class="py-4 px-6">
                             {{ total[index] }}
@@ -161,6 +176,16 @@ onMounted( () => {
             <button @click="addColumn" class="text-gray-200 bg-purple-800 hover:bg-purple-900 focus:ring-4 focus:outline-none focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-purple-900 dark:focus:ring-primary-800">
                 Add New Column
             </button>
+        </div>
+
+        <div 
+            class="mt-28 flex justify-center"
+        >
+            <router-link 
+                @click="clearAll" 
+                to="/"
+                class="bg-red-800 text-gray-100 text-semibold tracking-wider p-4 rounded-md" 
+            >Clear Everything</router-link>
         </div>
     </div>
 </template>
